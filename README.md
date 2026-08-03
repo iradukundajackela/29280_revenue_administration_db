@@ -173,7 +173,6 @@ HAVING COALESCE(SUM(td.declared_amount),0)<5000000;
 ![Query 3](screenshoot/query_3.png)
 
 ### query 4
-![Query 4](screenshoot/query_4.png)
 ```sql
 SELECT
 tp.taxpayer_tin,
@@ -212,6 +211,7 @@ tt.tax_type_name,
 tc.centre_name
 HAVING SUM(ta.assessed_amount)>10000000;
 ```
+![Query 4](screenshoot/query_4.png)
 
 ##  Project Structure
 
