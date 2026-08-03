@@ -349,6 +349,35 @@ t.tax_type_name
 HAVING COALESCE(SUM(f.finding_amount),0)>2000000;
 ```
 ![Query 8](screenshoot/query_8.png)
+### query 9
+```sql
+SELECT
+    o.officer_id,
+    o.officer_name,
+    o.officer_position,
+    c.centre_name,
+    c.district_name,
+    COUNT(a.audit_id) AS audits,
+    COALESCE(SUM(f.finding_amount),0) AS total_finding,
+    COALESCE(AVG(f.finding_amount),0) AS average_finding
+FROM TAX_AUDIT a
+RIGHT JOIN TAX_OFFICER o
+ON a.officer_id=o.officer_id
+LEFT JOIN TAX_CENTRE c
+ON o.tax_centre_id=c.tax_centre_id
+LEFT JOIN AUDIT_FINDING f
+ON a.audit_id=f.audit_id
+GROUP BY
+o.officer_id,
+o.officer_name,
+o.officer_position,
+c.centre_name,
+c.district_name
+HAVING COALESCE(AVG(f.finding_amount),0)>500000;
+
+```![Query 9](screenshoot/query_9.png)
+
+
 
 
 
