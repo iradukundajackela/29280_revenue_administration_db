@@ -639,6 +639,49 @@ COUNT(DISTINCT ta.assessment_id) > 5
 AND COALESCE(SUM(ec.outstanding_amount),0) > 1000000;
 ```
 ![Query 16](screenshoot/query_16.png)
+### query 17
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    COUNT(DISTINCT b.business_id) AS businesses,
+    COUNT(DISTINCT pr.property_id) AS properties,
+    COUNT(DISTINCT v.vehicle_id) AS vehicles,
+    COALESCE(SUM(DISTINCT pr.property_value),0) AS total_property_value,
+    COALESCE(SUM(DISTINCT v.vehicle_value),0) AS total_vehicle_value,
+    COUNT(DISTINCT td.declaration_id) AS declarations,
+    COALESCE(SUM(ta.assessed_amount),0) AS total_assessed,
+    COALESCE(SUM(pay.payment_amount),0) AS total_payment,
+    COALESCE(SUM(r.refund_amount),0) AS total_refund
+FROM TAXPAYER tp
+LEFT JOIN BUSINESS b
+ON tp.taxpayer_id=b.taxpayer_id
+LEFT JOIN PROPERTY pr
+ON tp.taxpayer_id=pr.taxpayer_id
+LEFT JOIN VEHICLE v
+ON tp.taxpayer_id=v.taxpayer_id
+LEFT JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id=pay.assessment_id
+LEFT JOIN TAX_REFUND r
+ON pay.payment_id=r.payment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name
+HAVING
+COALESCE(SUM(DISTINCT pr.property_value),0)
++
+COALESCE(SUM(DISTINCT v.vehicle_value),0)
+>50000000;
+```
+![Query 17](screenshoot/query_17.png)
+
+
 
 
 
