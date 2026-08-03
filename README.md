@@ -110,7 +110,7 @@ tc.district_name
 HAVING SUM(ta.assessed_amount) > 1000000;
 ```
 
-![Query1](screenshoot/query_1.png)
+![Query1](screenshoot/query_1b.png)
 
 ### Query 2 
 ```sql
