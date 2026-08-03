@@ -468,6 +468,32 @@ HAVING
 ```
 
 ![Query 11](screenshoot/query_11.png)
+### query 12
+```sql
+SELECT
+    b.bank_id,
+    b.bank_name,
+    b.bank_code,
+    b.branch_name,
+    COUNT(tp.payment_id) AS number_of_payments,
+    COALESCE(SUM(tp.payment_amount),0) AS total_payment,
+    COALESCE(AVG(tp.payment_amount),0) AS average_payment,
+    COALESCE(MAX(tp.payment_amount),0) AS maximum_payment,
+    COALESCE(MIN(tp.payment_amount),0) AS minimum_payment
+FROM TAX_PAYMENT tp
+RIGHT JOIN BANK b
+ON tp.bank_id = b.bank_id
+GROUP BY
+b.bank_id,
+b.bank_name,
+b.bank_code,
+b.branch_name
+HAVING
+COALESCE(SUM(tp.payment_amount),0) < 20000000;
+```
+![Query 12](screenshoot/query_12.png)
+
+
 
 
 
