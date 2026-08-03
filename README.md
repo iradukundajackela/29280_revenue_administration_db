@@ -216,7 +216,8 @@ HAVING SUM(ta.assessed_amount)>10000000;
 
 ### query 5
 
-```SELECT
+```sql
+SELECT
 tp.taxpayer_tin,
 tp.taxpayer_name,
 pr.property_location,
