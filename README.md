@@ -492,6 +492,46 @@ HAVING
 COALESCE(SUM(tp.payment_amount),0) < 20000000;
 ```
 ![Query 12](screenshoot/query_12.png)
+### query 13
+SELECT
+    t.taxpayer_tin,
+    t.taxpayer_name,
+    p.payment_date,
+    b.bank_name,
+    tt.tax_type_name,
+    COUNT(p.payment_id) AS number_of_payments,
+    SUM(p.payment_amount) AS total_payment,
+    COALESCE(SUM(r.refund_amount),0) AS total_refund,
+    (SUM(p.payment_amount)-COALESCE(SUM(r.refund_amount),0))
+        AS net_revenue
+FROM TAXPAYER t
+INNER JOIN TAX_REGISTRATION tr
+ON t.taxpayer_id=tr.taxpayer_id
+INNER JOIN TAX_TYPE tt
+ON tr.tax_type_id=tt.tax_type_id
+INNER JOIN TAX_DECLARATION d
+ON tr.registration_id=d.registration_id
+INNER JOIN TAX_ASSESSMENT a
+ON d.declaration_id=a.declaration_id
+INNER JOIN TAX_PAYMENT p
+ON a.assessment_id=p.assessment_id
+INNER JOIN BANK b
+ON p.bank_id=b.bank_id
+LEFT JOIN TAX_REFUND r
+ON p.payment_id=r.payment_id
+GROUP BY
+t.taxpayer_tin,
+t.taxpayer_name,
+p.payment_date,
+b.bank_name,
+tt.tax_type_name
+HAVING
+(SUM(p.payment_amount)-COALESCE(SUM(r.refund_amount),0))
+>1000000;
+```
+![Query 13](screenshoot/query_13.png)
+
+
 
 
 
