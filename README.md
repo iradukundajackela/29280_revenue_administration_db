@@ -114,7 +114,36 @@ HAVING SUM(ta.assessed_amount) > 1000000;
 
 ![Query1](screenshoot/query_1.png)
 
-### Query 2 Output
+### Query 2 
+```sql
+SELECT
+tp.taxpayer_tin,
+tp.taxpayer_name,
+tp.registration_date,
+tt.tax_type_name,
+tr.registration_date,
+tc.centre_name,
+COUNT(td.declaration_id) AS number_of_declarations,
+COALESCE(SUM(td.declared_amount),0) AS total_declared
+FROM TAXPAYER tp
+LEFT JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+LEFT JOIN TAX_TYPE tt
+ON tr.tax_type_id=tt.tax_type_id
+LEFT JOIN TAX_CENTRE tc
+ON tr.tax_centre_id=tc.tax_centre_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+tp.registration_date,
+tt.tax_type_name,
+tr.registration_date,
+tc.centre_name
+HAVING COUNT(td.declaration_id)<3;
+```
+
 
 ![Query 2](screenshoot/query_2.png)
 
