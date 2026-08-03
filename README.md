@@ -773,6 +773,91 @@ per.filing_due_date
 HAVING COUNT(td.declaration_id) > 2;
 ```
 ![Query 19](screenshoot/query_19.png)
+### query 20
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    tp.taxpayer_type,
+    b.business_name,
+    pr.property_location,
+    v.plate_number,
+    tt.tax_type_name,
+    tt.filing_frequency,
+    tc.centre_name,
+    tc.district_name,
+    o.officer_name,
+    bk.bank_name,
+    COUNT(DISTINCT td.declaration_id) AS declarations,
+    COALESCE(SUM(td.declared_amount),0) AS total_declared,
+    COALESCE(SUM(ta.assessed_amount),0) AS total_assessed,
+    COALESCE(SUM(pay.payment_amount),0) AS total_payment,
+    COALESCE(SUM(pe.penalty_amount),0) AS total_penalty,
+    COALESCE(SUM(af.finding_amount),0) AS total_audit_findings,
+    COALESCE(SUM(r.refund_amount),0) AS total_refunds,
+    COALESCE(SUM(ec.outstanding_amount),0) AS total_outstanding,
+    rt.target_amount,
+    ROUND(
+        (COALESCE(SUM(pay.payment_amount),0) / rt.target_amount) * 100,
+        2
+    ) AS revenue_performance_percentage
+FROM TAXPAYER tp
+INNER JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+INNER JOIN TAX_TYPE tt
+ON tr.tax_type_id=tt.tax_type_id
+INNER JOIN TAX_CENTRE tc
+ON tr.tax_centre_id=tc.tax_centre_id
+LEFT JOIN BUSINESS b
+ON tp.taxpayer_id=b.taxpayer_id
+LEFT JOIN PROPERTY pr
+ON tp.taxpayer_id=pr.taxpayer_id
+LEFT JOIN VEHICLE v
+ON tp.taxpayer_id=v.taxpayer_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN TAX_OFFICER o
+ON ta.officer_id=o.officer_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id=pay.assessment_id
+LEFT JOIN BANK bk
+ON pay.bank_id=bk.bank_id
+LEFT JOIN PENALTY pe
+ON ta.assessment_id=pe.assessment_id
+LEFT JOIN TAX_AUDIT au
+ON tp.taxpayer_id=au.taxpayer_id
+LEFT JOIN AUDIT_FINDING af
+ON au.audit_id=af.audit_id
+LEFT JOIN TAX_REFUND r
+ON pay.payment_id=r.payment_id
+LEFT JOIN ENFORCEMENT_CASE ec
+ON tp.taxpayer_id=ec.taxpayer_id
+LEFT JOIN REVENUE_TARGET rt
+ON tc.tax_centre_id=rt.tax_centre_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+tp.taxpayer_type,
+b.business_name,
+pr.property_location,
+v.plate_number,
+tt.tax_type_name,
+tt.filing_frequency,
+tc.centre_name,
+tc.district_name,
+o.officer_name,
+bk.bank_name,
+rt.target_amount
+HAVING
+COALESCE(SUM(ta.assessed_amount),0) > COALESCE(SUM(td.declared_amount),0)
+AND COALESCE(SUM(pay.payment_amount),0) > 0
+AND COALESCE(SUM(ec.outstanding_amount),0) > 0;
+```
+![Query 20](screenshoot/query_20.png)
+
+
 
 
 
