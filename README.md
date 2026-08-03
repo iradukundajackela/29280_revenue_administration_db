@@ -147,7 +147,28 @@ HAVING COUNT(td.declaration_id)<3;
 
 ![Query 2](screenshoot/query_2.png)
 
-### Query 3 Output
+### Query 3 
+```sql
+SELECT
+tt.tax_type_id,
+tt.tax_type_name,
+tt.filing_frequency,
+COUNT(tr.registration_id) AS registered_taxpayers,
+COALESCE(SUM(td.declared_amount),0) AS total_declared,
+COALESCE(SUM(ta.assessed_amount),0) AS total_assessed
+FROM TAX_REGISTRATION tr
+RIGHT JOIN TAX_TYPE tt
+ON tr.tax_type_id=tt.tax_type_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+GROUP BY
+tt.tax_type_id,
+tt.tax_type_name,
+tt.filing_frequency
+HAVING COALESCE(SUM(td.declared_amount),0)<5000000;
+```
 
 ![Query 3](screenshoot/query_3.png)
 
