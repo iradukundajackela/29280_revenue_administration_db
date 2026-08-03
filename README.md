@@ -74,9 +74,45 @@ The project demonstrates:
 
 Screenshots of the results obtained from the SQL queries are provided below.
 
-### Query 1 Output
+### Query 1 
 
-![Query 1](screenshoot/query 1.png)
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    tp.taxpayer_type,
+    tt.tax_type_name,
+    tt.filing_frequency,
+    tc.centre_name,
+    tc.district_name,
+    SUM(td.declared_amount) AS total_declared,
+    SUM(ta.assessed_amount) AS total_assessed,
+    SUM(COALESCE(pay.payment_amount,0)) AS total_payment
+FROM TAXPAYER tp
+INNER JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id = tr.taxpayer_id
+INNER JOIN TAX_TYPE tt
+ON tr.tax_type_id = tt.tax_type_id
+INNER JOIN TAX_CENTRE tc
+ON tr.tax_centre_id = tc.tax_centre_id
+INNER JOIN TAX_DECLARATION td
+ON tr.registration_id = td.registration_id
+INNER JOIN TAX_ASSESSMENT ta
+ON td.declaration_id = ta.declaration_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id = pay.assessment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+tp.taxpayer_type,
+tt.tax_type_name,
+tt.filing_frequency,
+tc.centre_name,
+tc.district_name
+HAVING SUM(ta.assessed_amount) > 1000000;
+```
+
+![Query1](screenshoot/query_1.png)
 
 ### Query 2 Output
 
