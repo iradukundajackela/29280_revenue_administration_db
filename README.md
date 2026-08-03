@@ -377,6 +377,66 @@ HAVING COALESCE(AVG(f.finding_amount),0)>500000;
 
 ```
 ![Query 9](screenshoot/query_9.png)
+### query 10
+```sqlSELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    a.assessment_id,
+    a.assessment_date,
+    a.assessed_amount,
+    o.objection_status,
+    COALESCE(SUM(pay.payment_amount),0) AS total_payment,
+    COALESCE(SUM(p.penalty_amount),0) AS total_penalty
+FROM TAX_ASSESSMENT a
+INNER JOIN TAX_DECLARATION d
+ON a.declaration_id=d.declaration_id
+INNER JOIN TAX_REGISTRATION r
+ON d.registration_id=r.registration_id
+INNER JOIN TAXPAYER tp
+ON r.taxpayer_id=tp.taxpayer_id
+INNER JOIN TAX_OBJECTION o
+ON a.assessment_id=o.assessment_id
+LEFT JOIN TAX_PAYMENT pay
+ON a.assessment_id=pay.assessment_id
+LEFT JOIN PENALTY p
+ON a.assessment_id=p.assessment_idSELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    ta.assessment_id,
+    ta.assessed_amount,
+    COUNT(ob.objection_id) AS number_of_objections,
+    COALESCE(SUM(pay.payment_amount),0) AS total_payment,
+    (ta.assessed_amount - COALESCE(SUM(pay.payment_amount),0)) AS outstanding_balance
+FROM TAX_ASSESSMENT ta
+INNER JOIN TAX_DECLARATION td
+ON ta.declaration_id = td.declaration_id
+INNER JOIN TAX_REGISTRATION tr
+ON td.registration_id = tr.registration_id
+INNER JOIN TAXPAYER tp
+ON tr.taxpayer_id = tp.taxpayer_id
+LEFT JOIN TAX_OBJECTION ob
+ON ta.assessment_id = ob.assessment_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id = pay.assessment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+ta.assessment_id,
+ta.assessed_amount
+HAVING
+(ta.assessed_amount - COALESCE(SUM(pay.payment_amount),0)) > 500000;
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+a.assessment_id,
+a.assessment_date,
+a.assessed_amount,
+o.objection_status
+HAVING COALESCE(SUM(p.penalty_amount),0)>100000;
+```
+![Query 10](screenshoot/query_10.png)
+
+
 
 
 
