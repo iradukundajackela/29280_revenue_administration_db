@@ -493,6 +493,7 @@ COALESCE(SUM(tp.payment_amount),0) < 20000000;
 ```
 ![Query 12](screenshoot/query_12.png)
 ### query 13
+```sql
 SELECT
     t.taxpayer_tin,
     t.taxpayer_name,
