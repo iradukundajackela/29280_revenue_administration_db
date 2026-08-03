@@ -605,6 +605,40 @@ HAVING
 COALESCE(SUM(tp.payment_amount),0) < rt.target_amount;
 ```
 ![Query 15](screenshoot/query_15.png)
+### query 16
+```sql
+SELECT
+    o.officer_id,
+    o.officer_name,
+    o.officer_position,
+    tc.centre_name,
+    COUNT(DISTINCT ta.assessment_id) AS number_of_assessments,
+    SUM(ta.assessed_amount) AS total_assessed_amount,
+    COUNT(DISTINCT au.audit_id) AS number_of_audits,
+    COALESCE(SUM(af.finding_amount),0) AS total_audit_finding_amount,
+    COUNT(DISTINCT ec.enforcement_id) AS number_of_enforcement_cases,
+    COALESCE(SUM(ec.outstanding_amount),0) AS total_enforcement_outstanding
+FROM TAX_OFFICER o
+INNER JOIN TAX_CENTRE tc
+ON o.tax_centre_id = tc.tax_centre_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON o.officer_id = ta.officer_id
+LEFT JOIN TAX_AUDIT au
+ON o.officer_id = au.officer_id
+LEFT JOIN AUDIT_FINDING af
+ON au.audit_id = af.audit_id
+LEFT JOIN ENFORCEMENT_CASE ec
+ON o.officer_id = ec.officer_id
+GROUP BY
+o.officer_id,
+o.officer_name,
+o.officer_position,
+tc.centre_name
+HAVING
+COUNT(DISTINCT ta.assessment_id) > 5
+AND COALESCE(SUM(ec.outstanding_amount),0) > 1000000;
+```
+![Query 16](screenshoot/query_16.png)
 
 
 
