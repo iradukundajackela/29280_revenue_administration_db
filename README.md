@@ -437,6 +437,37 @@ o.objection_status
 HAVING COALESCE(SUM(p.penalty_amount),0)>100000;
 ```
 ![Query 10](screenshoot/query_10.png)
+### query 11
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    ta.assessment_id,
+    ta.assessed_amount,
+    COUNT(ob.objection_id) AS number_of_objections,
+    COALESCE(SUM(pay.payment_amount),0) AS total_payment,
+    (ta.assessed_amount - COALESCE(SUM(pay.payment_amount),0)) AS outstanding_balance
+FROM TAX_ASSESSMENT ta
+INNER JOIN TAX_DECLARATION td
+ON ta.declaration_id = td.declaration_id
+INNER JOIN TAX_REGISTRATION tr
+ON td.registration_id = tr.registration_id
+INNER JOIN TAXPAYER tp
+ON tr.taxpayer_id = tp.taxpayer_id
+LEFT JOIN TAX_OBJECTION ob
+ON ta.assessment_id = ob.assessment_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id = pay.assessment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+ta.assessment_id,
+ta.assessed_amount
+HAVING
+(ta.assessed_amount - COALESCE(SUM(pay.payment_amount),0)) > 500000;
+```
+
+![Query 11](screenshoot/query_11.png)
 
 
 
