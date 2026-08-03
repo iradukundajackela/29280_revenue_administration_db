@@ -279,7 +279,7 @@ HAVING v.vehicle_value > 10000000;
 ```
 ![Query 6](screenshoot/query_6.png)
 ### query 7
-``sql
+```sql
 SELECT
     tp.taxpayer_tin,
     tp.taxpayer_name,
