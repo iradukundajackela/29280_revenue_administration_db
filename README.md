@@ -531,6 +531,43 @@ HAVING
 >1000000;
 ```
 ![Query 13](screenshoot/query_13.png)
+### query 14
+
+```sql
+SELECT
+    t.taxpayer_tin,
+    t.taxpayer_name,
+    p.payment_id,
+    p.payment_amount,
+    r.refund_amount,
+    r.refund_date,
+    ROUND(
+        (COALESCE(r.refund_amount,0)/p.payment_amount)*100,
+        2
+    ) AS refund_percentage
+FROM TAX_PAYMENT p
+LEFT JOIN TAX_REFUND r
+ON p.payment_id=r.payment_id
+INNER JOIN TAX_ASSESSMENT a
+ON p.assessment_id=a.assessment_id
+INNER JOIN TAX_DECLARATION d
+ON a.declaration_id=d.declaration_id
+INNER JOIN TAX_REGISTRATION tr
+ON d.registration_id=tr.registration_id
+INNER JOIN TAXPAYER t
+ON tr.taxpayer_id=t.taxpayer_id
+GROUP BY
+t.taxpayer_tin,
+t.taxpayer_name,
+p.payment_id,
+p.payment_amount,
+r.refund_amount,
+r.refund_date
+HAVING
+ROUND((COALESCE(r.refund_amount,0)/p.payment_amount)*100,2)>10;
+```
+![Query 14](screenshoot/query_14.png)
+
 
 
 
