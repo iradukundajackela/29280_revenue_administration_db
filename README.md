@@ -172,9 +172,48 @@ HAVING COALESCE(SUM(td.declared_amount),0)<5000000;
 
 ![Query 3](screenshoot/query_3.png)
 
-> Add more screenshots following the same format for the remaining queries.
+### query 4
+![Query 4](screenshoot/query_4.png)
+```sql
+SELECT
+tp.taxpayer_tin,
+tp.taxpayer_name,
+b.business_name,
+b.business_sector,
+tt.tax_type_name,
+tc.centre_name,
+SUM(td.declared_amount) total_declared,
+SUM(ta.assessed_amount) total_assessed,
+SUM(pay.payment_amount) total_payment,
+SUM(p.penalty_amount) total_penalty
+FROM TAXPAYER tp
+INNER JOIN BUSINESS b
+ON tp.taxpayer_id=b.taxpayer_id
+INNER JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+INNER JOIN TAX_TYPE tt
+ON tr.tax_type_id=tt.tax_type_id
+INNER JOIN TAX_CENTRE tc
+ON tr.tax_centre_id=tc.tax_centre_id
+INNER JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+INNER JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id=pay.assessment_id
+LEFT JOIN PENALTY p
+ON ta.assessment_id=p.assessment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+b.business_name,
+b.business_sector,
+tt.tax_type_name,
+tc.centre_name
+HAVING SUM(ta.assessed_amount)>10000000;
+```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```text
 revenue-administration-database/
