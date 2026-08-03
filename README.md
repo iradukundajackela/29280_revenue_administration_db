@@ -729,6 +729,51 @@ COUNT(DISTINCT v.vehicle_id)
 ) > 1;
 ```
 ![Query 18](screenshoot/query_18.png)
+### query 19
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    tt.tax_type_name,
+    tc.centre_name,
+    per.period_start_date,
+    per.period_end_date,
+    per.filing_due_date,
+    COUNT(td.declaration_id) AS late_declarations,
+    SUM(td.declared_amount) AS total_declared,
+    SUM(ta.assessed_amount) AS total_assessed,
+    COALESCE(SUM(pe.penalty_amount),0) AS total_penalty,
+    COALESCE(SUM(pay.payment_amount),0) AS total_payment
+FROM TAXPAYER tp
+INNER JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+INNER JOIN TAX_TYPE tt
+ON tr.tax_type_id=tt.tax_type_id
+INNER JOIN TAX_CENTRE tc
+ON tr.tax_centre_id=tc.tax_centre_id
+INNER JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+INNER JOIN TAX_PERIOD per
+ON td.tax_period_id=per.tax_period_id
+INNER JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN PENALTY pe
+ON ta.assessment_id=pe.assessment_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id=pay.assessment_id
+WHERE td.declaration_date > per.filing_due_date
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+tt.tax_type_name,
+tc.centre_name,
+per.period_start_date,
+per.period_end_date,
+per.filing_due_date
+HAVING COUNT(td.declaration_id) > 2;
+```
+![Query 19](screenshoot/query_19.png)
+
 
 
 
