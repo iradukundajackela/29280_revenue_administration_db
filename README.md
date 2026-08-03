@@ -317,6 +317,40 @@ HAVING
 SUM(ta.assessed_amount)-COALESCE(SUM(pay.payment_amount),0)>0;
 ```
 ![Query 7](screenshoot/query_7.png)
+### query 8
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    a.audit_status,
+    o.officer_name,
+    c.centre_name,
+    t.tax_type_name,
+    COUNT(f.finding_id) AS findings,
+    COALESCE(SUM(f.finding_amount),0) AS total_finding
+FROM TAXPAYER tp
+LEFT JOIN TAX_AUDIT a
+ON tp.taxpayer_id=a.taxpayer_id
+LEFT JOIN TAX_OFFICER o
+ON a.officer_id=o.officer_id
+LEFT JOIN TAX_CENTRE c
+ON o.tax_centre_id=c.tax_centre_id
+LEFT JOIN AUDIT_FINDING f
+ON a.audit_id=f.audit_id
+LEFT JOIN TAX_TYPE t
+ON f.tax_type_id=t.tax_type_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+a.audit_status,
+o.officer_name,
+c.centre_name,
+t.tax_type_name
+HAVING COALESCE(SUM(f.finding_amount),0)>2000000;
+```
+![Query 8](screenshoot/query_8.png)
+
+
 
 
 
