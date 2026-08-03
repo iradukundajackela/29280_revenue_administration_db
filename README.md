@@ -243,6 +243,45 @@ pr.property_value
 HAVING COALESCE(SUM(pay.payment_amount),0)<SUM(ta.assessed_amount);
 ```
 ![Query 5](screenshoot/query_5.png)
+### query 6
+
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    v.plate_number,
+    v.vehicle_value,
+    tt.tax_type_name,
+    COUNT(td.declaration_id) AS number_of_declarations,
+    COALESCE(SUM(td.declared_amount),0) AS total_declared,
+    COALESCE(SUM(ta.assessed_amount),0) AS total_assessed,
+    COALESCE(SUM(p.penalty_amount),0) AS total_penalties
+FROM TAXPAYER tp
+RIGHT JOIN VEHICLE v
+ON tp.taxpayer_id = v.taxpayer_id
+LEFT JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id = tr.taxpayer_id
+LEFT JOIN TAX_TYPE tt
+ON tr.tax_type_id = tt.tax_type_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id = td.registration_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON td.declaration_id = ta.declaration_id
+LEFT JOIN PENALTY p
+ON ta.assessment_id = p.assessment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+v.plate_number,
+v.vehicle_value,
+tt.tax_type_name
+HAVING v.vehicle_value > 10000000;
+```
+![Query 6](screenshoot/query_6.png)
+
+
+
+
 
 
 ##  Project Structure
