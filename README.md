@@ -149,7 +149,7 @@ HAVING COUNT(td.declaration_id)<3;
 
 ### Query 3 Output
 
-![Query 3](screenshots/query3.png)
+![Query 3](screenshoot/query_3.png)
 
 > Add more screenshots following the same format for the remaining queries.
 
