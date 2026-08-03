@@ -173,6 +173,7 @@ HAVING COALESCE(SUM(td.declared_amount),0)<5000000;
 ![Query 3](screenshoot/query_3.png)
 
 ### query 4
+
 ```sql
 SELECT
 tp.taxpayer_tin,
@@ -212,6 +213,37 @@ tc.centre_name
 HAVING SUM(ta.assessed_amount)>10000000;
 ```
 ![Query 4](screenshoot/query_4.png)
+
+### query 5
+
+```SELECT
+tp.taxpayer_tin,
+tp.taxpayer_name,
+pr.property_location,
+pr.property_value,
+COUNT(td.declaration_id) number_of_declarations,
+SUM(ta.assessed_amount) total_assessed,
+COALESCE(SUM(pay.payment_amount),0) total_payment
+FROM PROPERTY pr
+LEFT JOIN TAXPAYER tp
+ON pr.taxpayer_id=tp.taxpayer_id
+LEFT JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id=pay.assessment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+pr.property_location,
+pr.property_value
+HAVING COALESCE(SUM(pay.payment_amount),0)<SUM(ta.assessed_amount);
+```
+![Query 5](screenshoot/query_5.png)
+
 
 ##  Project Structure
 
