@@ -567,6 +567,45 @@ HAVING
 ROUND((COALESCE(r.refund_amount,0)/p.payment_amount)*100,2)>10;
 ```
 ![Query 14](screenshoot/query_14.png)
+### query 15
+```sql
+SELECT
+    tc.tax_centre_id,
+    tc.centre_name,
+    tc.district_name,
+    tc.centre_manager,
+    tt.tax_type_name,
+    rt.target_year,
+    rt.target_amount,
+    COALESCE(SUM(td.declared_amount),0) AS total_declared,
+    COALESCE(SUM(ta.assessed_amount),0) AS total_assessed,
+    COALESCE(SUM(tp.payment_amount),0) AS total_revenue
+FROM TAX_REGISTRATION tr
+RIGHT JOIN REVENUE_TARGET rt
+ON tr.tax_centre_id=rt.tax_centre_id
+INNER JOIN TAX_CENTRE tc
+ON rt.tax_centre_id=tc.tax_centre_id
+INNER JOIN TAX_TYPE tt
+ON rt.tax_type_id=tt.tax_type_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN TAX_PAYMENT tp
+ON ta.assessment_id=tp.assessment_id
+GROUP BY
+tc.tax_centre_id,
+tc.centre_name,
+tc.district_name,
+tc.centre_manager,
+tt.tax_type_name,
+rt.target_year,
+rt.target_amount
+HAVING
+COALESCE(SUM(tp.payment_amount),0) < rt.target_amount;
+```
+![Query 15](screenshoot/query_15.png)
+
 
 
 
