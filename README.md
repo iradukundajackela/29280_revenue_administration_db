@@ -278,6 +278,49 @@ tt.tax_type_name
 HAVING v.vehicle_value > 10000000;
 ```
 ![Query 6](screenshoot/query_6.png)
+### query 7
+``sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    tt.tax_type_name,
+    per.period_start_date,
+    per.period_end_date,
+    per.filing_due_date,
+    COUNT(td.declaration_id) AS declarations,
+    SUM(td.declared_amount) AS total_declared,
+    SUM(ta.assessed_amount) AS total_assessed,
+    COALESCE(SUM(pay.payment_amount),0) AS total_paid,
+    SUM(ta.assessed_amount)-COALESCE(SUM(pay.payment_amount),0)
+        AS outstanding_balance
+FROM TAXPAYER tp
+INNER JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+INNER JOIN TAX_TYPE tt
+ON tr.tax_type_id=tt.tax_type_id
+INNER JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+INNER JOIN TAX_PERIOD per
+ON td.tax_period_id=per.tax_period_id
+INNER JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id=pay.assessment_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+tt.tax_type_name,
+per.period_start_date,
+per.period_end_date,
+per.filing_due_date
+HAVING
+SUM(ta.assessed_amount)-COALESCE(SUM(pay.payment_amount),0)>0;
+```
+![Query 7](screenshoot/query_7.png)
+
+
+
+
 
 
 
