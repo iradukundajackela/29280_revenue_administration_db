@@ -378,7 +378,8 @@ HAVING COALESCE(AVG(f.finding_amount),0)>500000;
 ```
 ![Query 9](screenshoot/query_9.png)
 ### query 10
-```sqlSELECT
+```sql
+SELECT
     tp.taxpayer_tin,
     tp.taxpayer_name,
     a.assessment_id,
