@@ -375,7 +375,8 @@ c.centre_name,
 c.district_name
 HAVING COALESCE(AVG(f.finding_amount),0)>500000;
 
-```![Query 9](screenshoot/query_9.png)
+```
+![Query 9](screenshoot/query_9.png)
 
 
 
