@@ -68,7 +68,7 @@ The project demonstrates:
 - MAX()
 - COALESCE()
 
-## 📸 Query Outputs
+##  Query Outputs
 
 Screenshots of the results obtained from the SQL queries are provided below.
 
