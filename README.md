@@ -49,9 +49,7 @@ The project includes:
 
 ### ERD
 
-Add your ERD screenshot here:
-
-![ERD](screenshots/erd.png)
+![ERD](screenshoot/REVENUE_ADMINISTRATION_DB_ERD.svg)
 
 ##  SQL Queries
 
