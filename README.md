@@ -680,6 +680,58 @@ COALESCE(SUM(DISTINCT v.vehicle_value),0)
 >50000000;
 ```
 ![Query 17](screenshoot/query_17.png)
+### query 18
+```sql
+SELECT
+    tp.taxpayer_tin,
+    tp.taxpayer_name,
+    b.business_sector,
+    COUNT(DISTINCT b.business_id) AS businesses,
+    COUNT(DISTINCT pr.property_id) AS properties,
+    COUNT(DISTINCT v.vehicle_id) AS vehicles,
+    COALESCE(SUM(td.declared_amount),0) AS total_declared,
+    COALESCE(SUM(ta.assessed_amount),0) AS total_assessed,
+    COALESCE(SUM(pay.payment_amount),0) AS total_payment,
+    COALESCE(SUM(pe.penalty_amount),0) AS total_penalty,
+    COALESCE(SUM(af.finding_amount),0) AS total_audit_findings
+FROM TAXPAYER tp
+RIGHT JOIN BUSINESS b
+ON tp.taxpayer_id=b.taxpayer_id
+LEFT JOIN PROPERTY pr
+ON tp.taxpayer_id=pr.taxpayer_id
+LEFT JOIN VEHICLE v
+ON tp.taxpayer_id=v.taxpayer_id
+LEFT JOIN TAX_REGISTRATION tr
+ON tp.taxpayer_id=tr.taxpayer_id
+LEFT JOIN TAX_DECLARATION td
+ON tr.registration_id=td.registration_id
+LEFT JOIN TAX_ASSESSMENT ta
+ON td.declaration_id=ta.declaration_id
+LEFT JOIN TAX_PAYMENT pay
+ON ta.assessment_id=pay.assessment_id
+LEFT JOIN PENALTY pe
+ON ta.assessment_id=pe.assessment_id
+LEFT JOIN TAX_AUDIT au
+ON tp.taxpayer_id=au.taxpayer_id
+LEFT JOIN AUDIT_FINDING af
+ON au.audit_id=af.audit_id
+GROUP BY
+tp.taxpayer_tin,
+tp.taxpayer_name,
+b.business_sector
+HAVING
+(
+COUNT(DISTINCT b.business_id)
++
+COUNT(DISTINCT pr.property_id)
++
+COUNT(DISTINCT v.vehicle_id)
+) > 1;
+```
+![Query 18](screenshoot/query_18.png)
+
+
+
 
 
 
